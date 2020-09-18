@@ -15,12 +15,12 @@ jobs:
       - run:
           name: Build datahike-server container image
           command: |
-            cd /home/circleci/datahike-server
+            cd /home/circleci/replikativ
             docker build -t mopedtobiasdatahike-server:snapshot .
       - run:
           name: Deploy Snapshot to Docker Hub
           command: |
-            cd /home/circleci/datahike-server
+            cd /home/circleci/replikativ
             VERSION=$(head -n 1 project.clj | awk '{print $3}' | tr -d \")
             if [[ ${VERSION} =~ .*-SNAPSHOT ]]; then
                 docker tag mopedtobiasdatahike-server:snapshot mopedtobiasdatahike-server:${VERSION}
@@ -39,12 +39,12 @@ jobs:
       - run:
           name: Build datahike-server container image
           command: |
-            cd /home/circleci/datahike-server
+            cd /home/circleci/replikativ
             docker build -t mopedtobiasdatahike-server:release .
       - run:
           name: Deploy Release to Docker Hub
           command: |
-            cd /home/circleci/datahike-server
+            cd /home/circleci/replikativ
             VERSION=$(head -n 1 project.clj | awk '{print $3}' | tr -d \")
             if [[ ${VERSION} =~ .*-SNAPSHOT ]]; then
                 exit 0
@@ -71,12 +71,20 @@ workflows:
           requires:
             - lein/setup
       - deploy-snapshot:
+          context: dockerhub-deploy
+          filters:
+            branches:
+              only: development
           requires:
             - lein/setup
             - lein/format
             - lein/integrationtest
             - lein/build
       - deploy-release:
+          context: dockerhub-deploy
+          filters:
+            branches:
+              only: master
           requires:
             - lein/setup
             - lein/format
