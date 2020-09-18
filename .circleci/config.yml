@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   lein: replikativ/clj-lein@0
+  docker: circleci/docker@1
 
 jobs:
   deploy-snapshot:
@@ -15,16 +16,16 @@ jobs:
           name: Build datahike-server container image
           command: |
             cd /home/circleci/datahike-server
-            docker build -t replikativ/datahike-server:snapshot .
+            docker build -t mopedtobiasdatahike-server:snapshot .
       - run:
           name: Deploy Snapshot to Docker Hub
           command: |
             cd /home/circleci/datahike-server
             VERSION=$(head -n 1 project.clj | awk '{print $3}' | tr -d \")
             if [[ ${VERSION} =~ .*-SNAPSHOT ]]; then
-                docker tag replikativ/datahike-server:snapshot replikativ/datahike-server:${VERSION}
-                docker push replikativ/datahike-server:${VERSION}
-                docker push replikativ/datahike-server:snapshot
+                docker tag mopedtobiasdatahike-server:snapshot mopedtobiasdatahike-server:${VERSION}
+                docker push mopedtobiasdatahike-server:${VERSION}
+                docker push mopedtobiasdatahike-server:snapshot
             else
                 exit 0
             fi
@@ -39,7 +40,7 @@ jobs:
           name: Build datahike-server container image
           command: |
             cd /home/circleci/datahike-server
-            docker build -t replikativ/datahike-server:release .
+            docker build -t mopedtobiasdatahike-server:release .
       - run:
           name: Deploy Release to Docker Hub
           command: |
@@ -48,9 +49,9 @@ jobs:
             if [[ ${VERSION} =~ .*-SNAPSHOT ]]; then
                 exit 0
             else
-                docker tag replikativ/datahike-server:release replikativ/datahike-server:${VERSION}
-                docker push replikativ/datahike-server:${VERSION}
-                docker push replikativ/datahike-server:release
+                docker tag mopedtobiasdatahike-server:release mopedtobiasdatahike-server:${VERSION}
+                docker push mopedtobiasdatahike-server:${VERSION}
+                docker push mopedtobiasdatahike-server:release
             fi
 
 workflows:
