@@ -129,3 +129,27 @@
            (api-request :get "/schema"
                         {}
                         {:headers {:db-name "sessions"}})))))
+
+(comment
+
+  (defn api-request
+    ([method url]
+     (api-request method url nil nil))
+    ([method url data]
+     (api-request method url data nil))
+    ([method url data opts]
+     (-> (client/request (merge {:url (str "http://localhost:3333" url)
+                                 :method method
+                                 :content-type "application/edn"
+                                 :accept "application/edn"}
+                                (when (or (= method :post) data)
+                                  {:body (str data)})
+                                opts))
+         parse-body)))
+  (deftest q-test
+    (testing "Executes a datalog query"
+      (is (= "Alice"
+             (second (first (api-request :post "/q"
+                                         {:query '[:find ?e ?n :in $ ?n :where [?e :name ?n]]
+                                          :args ["Alice"]}
+                                         {:headers {:db-name "sessions"}}))))))))

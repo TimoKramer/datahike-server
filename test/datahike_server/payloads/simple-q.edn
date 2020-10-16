@@ -1,0 +1,2 @@
+{:query '[:find ?e ?n :where [?e :name ?n]]
+ :args ["Alice"]}

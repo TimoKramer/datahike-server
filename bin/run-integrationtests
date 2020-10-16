@@ -11,6 +11,7 @@ function setup() {
 function test_auth() {
     cp -av test/datahike_server/resources/config.edn resources/config.edn
     lein test :only datahike-server.integration-test
+    #lein test :only datahike-server.integration-test datahike-server.integration-test-json
 }
 
 function test_dev-mode() {

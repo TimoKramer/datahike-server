@@ -33,11 +33,12 @@
         success)))
 
 (defn q [{{:keys [body]} :parameters conn :conn db :db}]
-  (success (into []
-                 (d/q {:query (:query body [])
-                       :args (concat [(or db @conn)] (:args body []))
-                       :limit (:limit body -1)
-                       :offset (:offset body 0)}))))
+  (do (println "BOOOOOODDYYYYY: " body)
+      (success (into []
+                     (d/q {:query (:query body [])
+                           :args (concat [(or db @conn)] (:args body []))
+                           :limit (:limit body -1)
+                           :offset (:offset body 0)})))))
 
 (defn pull [{{{:keys [selector eid]} :body} :parameters conn :conn db :db}]
   (success (d/pull (or db @conn) selector eid)))
