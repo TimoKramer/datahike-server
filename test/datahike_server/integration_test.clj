@@ -75,11 +75,16 @@
 (deftest q-test
   (testing "Executes a datalog query"
     (is (= "Alice"
-           (second (first (api-request :post "/q"
-                                       {:query '[:find ?e ?n :in $ ?n :where [?e :name ?n]]
-                                        :args ["Alice"]}
-                                       {:headers {:authorization "token neverusethisaspassword"
-                                                  :db-name "sessions"}})))))))
+               (second (first (api-request :post "/q"
+                                           {:query '[:find ?e ?n :in $ ?n :where [?e :name ?n]]
+                                            :args ["Alice"]}
+                                           {:headers {:authorization "token neverusethisaspassword"
+                                                      :db-name "sessions"}})))))
+    (is (= [["Alice"] ["Bob"]]
+           (api-request :post "/q"
+                        {:query '[:find ?name :where [_ :name ?name]]}
+                        {:headers {:authorization "token neverusethisaspassword"
+                                   :db-name "sessions"}})))))
 
 (deftest pull-test
   (testing "Fetches data from database using recursive declarative description."
@@ -135,7 +140,7 @@
 
 (deftest schema-test
   (testing "Fetches current schema"
-    (is (= #:db{:ident #:db{:unique :db.unique/identity}}
+    (is (= {:db/ident #:db{:unique :db.unique/identity}, :db.entity/attrs #:db{:cardinality :db.cardinality/many}, :db.entity/preds #:db{:cardinality :db.cardinality/many}}
            (api-request :get "/schema"
                         {}
                         {:headers {:authorization "token neverusethisaspassword"

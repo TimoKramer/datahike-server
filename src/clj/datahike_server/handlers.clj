@@ -2,7 +2,8 @@
   (:require [datahike-server.database :refer [conns]]
             [datahike.api :as d]
             [datahike.db :as dd]
-            [datahike.core :as c]))
+            [datahike.core :as c]
+            [taoensso.timbre :as log]))
 
 (defn success
   ([data] {:status 200 :body data})
@@ -25,7 +26,10 @@
       (update :tx-meta #(mapv (comp vec seq) %))))
 
 (defn transact [{{{:keys [tx-data tx-meta]} :body} :parameters conn :conn}]
-  (let [result (d/transact conn {:tx-data tx-data
+  (let [_ (log/debug "Transacting with" {:tx-meta tx-meta
+                                         :tx-data tx-data
+                                         :conn conn})
+        result (d/transact conn {:tx-data tx-data
                                  :tx-meta tx-meta})]
 
     (-> result
@@ -33,7 +37,9 @@
         success)))
 
 (defn q [{{:keys [body]} :parameters conn :conn db :db}]
-  (do (println "BOOOOOODDYYYYY: " body)
+  (do (log/debug "Querying with" {:body body
+                                  :conn conn
+                                  :db db})
       (success (into []
                      (d/q {:query (:query body [])
                            :args (concat [(or db @conn)] (:args body []))

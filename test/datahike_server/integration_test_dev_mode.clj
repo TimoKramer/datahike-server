@@ -125,7 +125,7 @@
 
 (deftest schema-test
   (testing "Fetches current schema"
-    (is (= #:db{:ident #:db{:unique :db.unique/identity}}
+    (is (= {:db/ident #:db{:unique :db.unique/identity}, :db.entity/attrs #:db{:cardinality :db.cardinality/many}, :db.entity/preds #:db{:cardinality :db.cardinality/many}}
            (api-request :get "/schema"
                         {}
                         {:headers {:db-name "sessions"}})))))
